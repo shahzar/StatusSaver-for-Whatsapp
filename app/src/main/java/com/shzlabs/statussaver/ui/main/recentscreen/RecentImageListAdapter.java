@@ -1,6 +1,7 @@
-package com.shzlabs.statussaver.ui.main;
+package com.shzlabs.statussaver.ui.main.recentscreen;
 
 import android.content.Context;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +27,15 @@ import butterknife.ButterKnife;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ImageListViewHolder>{
+public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageListAdapter.ImageListViewHolder>{
 
-    Context ctx;
-    List<ImageModel> items;
+    private Context ctx;
+    private List<ImageModel> items;
     private final PublishSubject<Integer> onClickSubject = PublishSubject.create();
+    private final PublishSubject<Integer> onSaveClickSubject = PublishSubject.create();
 
     @Inject
-    public ImageListAdapter(Context ctx) {
+    public RecentImageListAdapter(Context ctx) {
         this.ctx = ctx;
         items = new ArrayList<>();
     }
@@ -52,10 +54,14 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         return onClickSubject.asObservable();
     }
 
+    public Observable<Integer> getOnSaveItemClicks() {
+        return onSaveClickSubject.asObservable();
+    }
+
     @Override
     public ImageListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View itemView = LayoutInflater.from(ctx).inflate(R.layout.image_list_item, parent, false);
+        View itemView = LayoutInflater.from(ctx).inflate(R.layout.recent_image_list_item, parent, false);
 
         return new ImageListViewHolder(itemView);
     }
@@ -79,12 +85,29 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
                 })
                 .into(holder.thumbnailImageView);
 
+        ViewCompat.setTransitionName(holder.thumbnailImageView, items.get(position).getFileName());
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: 9/3/17 Change position to holder.get...
                 onClickSubject.onNext(position);
             }
         });
+
+        holder.saveImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSaveClickSubject.onNext(position);
+            }
+        });
+
+        if (items.get(position).isSavedLocally()) {
+            holder.saveImageView.setVisibility(View.GONE);
+        }else{
+            holder.saveImageView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -100,6 +123,8 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Imag
         ImageView thumbnailImageView;
         @BindView(R.id.progress_bar)
         ProgressBar progressBar;
+        @BindView(R.id.save_image_view)
+        ImageView saveImageView;
 
         public ImageListViewHolder(View itemView) {
             super(itemView);

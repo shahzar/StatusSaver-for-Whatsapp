@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -17,7 +20,6 @@ import com.shzlabs.statussaver.R;
 import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.BaseFragment;
 import com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity;
-import com.shzlabs.statussaver.ui.main.ImageListAdapter;
 
 import java.util.List;
 
@@ -27,18 +29,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 
+import static com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity.EXTRA_IMAGE_TRANSITION_NAME;
+
 /**
  * Created by shaz on 6/3/17.
  */
 
 public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
 
+    private static final String TAG = RecentPicsFragment.class.getSimpleName();
     View rootView;
-
     @Inject
     RecentPicsPresenter presenter;
     @Inject
-    ImageListAdapter adapter;
+    RecentImageListAdapter adapter;
     @BindView(R.id.images_recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.progress_bar)
@@ -47,6 +51,7 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.msg_no_media_text_view)
     TextView noRecentImagesMsgTextView;
+    private GridLayoutManager layoutManager;
 
     public static RecentPicsFragment newInstance() {
 
@@ -70,13 +75,20 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
         presenter.setLoadingAnimation(true);
 
         // Setup recycler view
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        layoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(layoutManager);
 
         adapter.getOnItemClicks().subscribe(new Action1<Integer>() {
             @Override
             public void call(Integer position) {
 //                presenter.saveMedia(adapter.getItemAtPosition(position));
-                presenter.loadImageViewer(adapter.getItemAtPosition(position));
+                presenter.loadImageViewer(adapter.getItemAtPosition(position), position);
+            }
+        });
+        adapter.getOnSaveItemClicks().subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer position) {
+                presenter.saveMedia(adapter.getItemAtPosition(position));
             }
         });
         recyclerView.setAdapter(adapter);
@@ -127,12 +139,24 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
     }
 
     @Override
-    public void displayImage(ImageModel imageModel) {
+    public void displayImage(int position, ImageModel imageModel) {
+
+        // Get ImageView at current position, to apply transition effect
+        View view = layoutManager.findViewByPosition(position);
+        ImageView imageView = (ImageView) view.findViewById(R.id.image_thumbnail);
+
         Intent intent = new Intent(getActivity(), ImageSliderActivity.class);
         Bundle bundle = new Bundle();
         bundle.putInt(ImageSliderActivity.INTENT_IMAGE_TYPE, ImageSliderActivity.IMAGES_TYPE_RECENT);
         bundle.putParcelable(ImageSliderActivity.INTENT_IMAGE_DATA, imageModel);
         intent.putExtras(bundle);
-        startActivity(intent);
+        intent.putExtra(EXTRA_IMAGE_TRANSITION_NAME, ViewCompat.getTransitionName(imageView));
+
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                getActivity(),
+                imageView,
+                ViewCompat.getTransitionName(imageView));
+
+        startActivity(intent, options.toBundle());
     }
 }

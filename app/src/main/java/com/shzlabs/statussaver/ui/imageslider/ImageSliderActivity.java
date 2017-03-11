@@ -20,6 +20,7 @@ public class ImageSliderActivity extends BaseActivity implements ImageSliderView
     private static final String TAG = ImageSliderActivity.class.getSimpleName();
     public static final String INTENT_IMAGE_DATA = "imageData";
     public static final String INTENT_IMAGE_TYPE = "imageType";
+    public static final String EXTRA_IMAGE_TRANSITION_NAME = "imageTransitionName";
     public static final int IMAGES_TYPE_RECENT = 0;
     public static final int IMAGES_TYPE_SAVED = 1;
     @Inject
@@ -34,6 +35,7 @@ public class ImageSliderActivity extends BaseActivity implements ImageSliderView
         getTheApplication().getAppComponent().inject(this);
         setContentView(R.layout.activity_image_details);
         ButterKnife.bind(this);
+        supportPostponeEnterTransition();
 
         ImageModel imageModel = null;
         int imageType = -1;

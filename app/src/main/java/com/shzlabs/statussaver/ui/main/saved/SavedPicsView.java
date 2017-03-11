@@ -13,5 +13,6 @@ public interface SavedPicsView extends MvpView{
     void displayLoadingAnimation(boolean status);
     void displaySavedImages(List<ImageModel> images);
     void displayNoImagesInfo();
-    void displayImage(ImageModel imageModel);
+    void displayImage(int position, ImageModel imageModel);
+    void displayDeleteSuccessMsg();
 }

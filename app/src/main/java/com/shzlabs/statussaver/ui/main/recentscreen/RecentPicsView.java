@@ -14,5 +14,5 @@ public interface RecentPicsView extends MvpView{
     void displayRecentImages(List<ImageModel> images);
     void displayNoImagesInfo();
     void displayImageSavedMsg();
-    void displayImage(ImageModel imageModel);
+    void displayImage(int position, ImageModel imageModel);
 }

@@ -35,8 +35,15 @@ public class SavedPicsPresenter extends BasePresenter<SavedPicsView> {
         }
     }
 
-    void loadImageViewer(ImageModel imageModel) {
-        getMvpView().displayImage(imageModel);
+    void loadImageViewer(ImageModel imageModel, int position) {
+        getMvpView().displayImage(position, imageModel);
+    }
+
+    void deleteLocalImages(List<ImageModel> imageModels) {
+        for (int i = 0; i < imageModels.size(); i++) {
+            fileHelper.deleteImageFromLocalDir(imageModels.get(i));
+        }
+        getMvpView().displayDeleteSuccessMsg();
     }
 
 }

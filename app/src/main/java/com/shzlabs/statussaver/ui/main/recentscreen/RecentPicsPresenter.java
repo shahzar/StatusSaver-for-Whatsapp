@@ -37,10 +37,11 @@ public class RecentPicsPresenter extends BasePresenter<RecentPicsView> {
 
     void saveMedia(ImageModel imageModel) {
         boolean status = fileHelper.saveMediaToLocalDir(imageModel);
+        getMvpView().displayImageSavedMsg();
     }
 
-    void loadImageViewer(ImageModel imageModel) {
-        getMvpView().displayImage(imageModel);
+    void loadImageViewer(ImageModel imageModel, int position) {
+        getMvpView().displayImage(position, imageModel);
     }
 
 }

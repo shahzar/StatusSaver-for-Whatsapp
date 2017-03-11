@@ -12,12 +12,21 @@ public class ImageModel implements Parcelable{
     private String fileName;
     private String completePath;
     private long lastModified;
+    private boolean savedLocally = false;
 
     public ImageModel(String fileName, String completePath, long lastModified) {
         this.fileName = fileName;
         this.completePath = completePath;
         this.lastModified = lastModified;
     }
+
+    public ImageModel(String fileName, String completePath, long lastModified, boolean isSavedLocally) {
+        this.fileName = fileName;
+        this.completePath = completePath;
+        this.lastModified = lastModified;
+        this.savedLocally = isSavedLocally;
+    }
+
 
     public String getFileName() {
         return fileName;
@@ -29,6 +38,10 @@ public class ImageModel implements Parcelable{
 
     public long getLastModified() {
         return lastModified;
+    }
+
+    public boolean isSavedLocally() {
+        return savedLocally;
     }
 
     @Override
@@ -55,6 +68,7 @@ public class ImageModel implements Parcelable{
                 fileName, completePath
         });
         dest.writeLong(lastModified);
+        dest.writeInt(savedLocally ? 1 : 0);
     }
 
     private ImageModel(Parcel in) {
@@ -63,6 +77,7 @@ public class ImageModel implements Parcelable{
         fileName = data[0];
         completePath = data[1];
         lastModified = in.readLong();
+        savedLocally= in.readInt() != 0;
     }
 
     public static final Parcelable.Creator<ImageModel> CREATOR

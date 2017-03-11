@@ -37,6 +37,55 @@ public class FileHelper {
         return Environment.getExternalStorageDirectory().toString()+ WHATSAPP_STATUS_DIR_URI;
     }
 
+    private boolean isStatusDirAvailable() {
+        String absolutePath = getStatusSaverDirPath();
+        File fPath = new File(absolutePath);
+        if (fPath.exists()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private boolean isWhatsappDirAvailable() {
+        String absolutePath = getWhatsappStatusDirPath();
+        File fPath = new File(absolutePath);
+        if (fPath.exists()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private List<ImageModel> sortMediaByLastCreated(List<ImageModel> imageModels) {
+        Collections.sort(imageModels, new Comparator<ImageModel>() {
+            @Override
+            public int compare(ImageModel o1, ImageModel o2) {
+                long o1Value = o1.getLastModified();
+                long o2Value = o2.getLastModified();
+                return o1Value > o2Value ? -1 : (o1Value < o2Value) ? 1: 0;
+            }
+        });
+        return imageModels;
+    }
+
+    private boolean setupStatusSaverDirectory() {
+        String absolutePath = getStatusSaverDirPath();
+        File fPath = new File(absolutePath);
+        if (!fPath.exists()) {
+            if (!fPath.mkdir()) {
+                Log.d(TAG, "setupStatusSaverDirectory: Error creating directory");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isFileAlreadySaved(String fileName) {
+        File dir = new File(getStatusSaverDirPath(), fileName);
+        return dir.exists();
+    }
+
     public List<ImageModel> getRecentImages() {
         List<ImageModel> images = new ArrayList<>();
         if (isWhatsappDirAvailable()) {
@@ -46,7 +95,8 @@ public class FileHelper {
                 ImageModel imageModel = new ImageModel(
                         files[i].getName(),
                         files[i].getAbsolutePath(),
-                        files[i].lastModified());
+                        files[i].lastModified(),
+                        isFileAlreadySaved(files[i].getName()));
                 images.add(imageModel);
             }
         }
@@ -68,38 +118,6 @@ public class FileHelper {
             }
         }
         return sortMediaByLastCreated(images);
-    }
-
-    private boolean isStatusDirAvailable() {
-        String absolutePath = getStatusSaverDirPath();
-        File fPath = new File(absolutePath);
-        if (fPath.exists()) {
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    private boolean isWhatsappDirAvailable() {
-        String absolutePath = getWhatsappStatusDirPath();
-        File fPath = new File(absolutePath);
-        if (fPath.exists()) {
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    private boolean setupStatusSaverDirectory() {
-        String absolutePath = getStatusSaverDirPath();
-        File fPath = new File(absolutePath);
-        if (!fPath.exists()) {
-            if (!fPath.mkdir()) {
-                Log.d(TAG, "setupStatusSaverDirectory: Error creating directory");
-                return false;
-            }
-        }
-        return true;
     }
 
     public boolean saveMediaToLocalDir(ImageModel imageModel) {
@@ -124,15 +142,11 @@ public class FileHelper {
         return true;
     }
 
-    private List<ImageModel> sortMediaByLastCreated(List<ImageModel> imageModels) {
-        Collections.sort(imageModels, new Comparator<ImageModel>() {
-            @Override
-            public int compare(ImageModel o1, ImageModel o2) {
-                long o1Value = o1.getLastModified();
-                long o2Value = o2.getLastModified();
-                return o1Value > o2Value ? -1 : (o1Value < o2Value) ? 1: 0;
-            }
-        });
-        return imageModels;
+    public boolean deleteImageFromLocalDir(ImageModel imageModel) {
+        File file = new File(getStatusSaverDirPath(), imageModel.getFileName());
+        if (file.exists()) {
+            return file.delete();
+        }
+        return false;
     }
 }

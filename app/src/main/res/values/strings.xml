@@ -5,4 +5,5 @@
     <string name="dialog_error_title">Error</string>
     <string name="no_images_saved">No images saved</string>
     <string name="no_images_recent">No recent status images found</string>
+    <string name="delete">Delete</string>
 </resources>
