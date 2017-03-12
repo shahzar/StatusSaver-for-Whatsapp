@@ -2,6 +2,8 @@ package com.shzlabs.statussaver.ui.main.recentscreen;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -87,10 +89,29 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
         });
         adapter.getOnSaveItemClicks().subscribe(new Action1<Integer>() {
             @Override
-            public void call(Integer position) {
-                presenter.saveMedia(adapter.getItemAtPosition(position));
+            public void call(final Integer position) {
+                // Get the save icon of current item
+                final View view = layoutManager.findViewByPosition(position);
+                adapter.showSaveProgress(view);
+
+                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.saveMedia(adapter.getItemAtPosition(position));
+                        adapter.showDeleteButton(view);
+                    }
+                }, 1000);
+
             }
         });
+        adapter.getOnDeleteItemClicks().subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer position) {
+                adapter.showSaveButton(layoutManager.findViewByPosition(position));
+                presenter.deleteLocalImage(adapter.getItemAtPosition(position));
+            }
+        });
+
         recyclerView.setAdapter(adapter);
 
         presenter.setLoadingAnimation(true);
@@ -158,5 +179,10 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
                 ViewCompat.getTransitionName(imageView));
 
         startActivity(intent, options.toBundle());
+    }
+
+    @Override
+    public void displayDeleteSuccessMsg() {
+        Snackbar.make(rootView, "Image removed from saved items", Snackbar.LENGTH_SHORT).show();
     }
 }

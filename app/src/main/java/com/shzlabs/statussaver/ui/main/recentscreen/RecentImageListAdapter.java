@@ -1,11 +1,14 @@
 package com.shzlabs.statussaver.ui.main.recentscreen;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -33,6 +36,7 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
     private List<ImageModel> items;
     private final PublishSubject<Integer> onClickSubject = PublishSubject.create();
     private final PublishSubject<Integer> onSaveClickSubject = PublishSubject.create();
+    private final PublishSubject<Integer> onDeleteClickSubject = PublishSubject.create();
 
     @Inject
     public RecentImageListAdapter(Context ctx) {
@@ -58,6 +62,35 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
         return onSaveClickSubject.asObservable();
     }
 
+    public Observable<Integer> getOnDeleteItemClicks() {
+        return onDeleteClickSubject.asObservable();
+    }
+
+    public void showSaveProgress(View itemView) {
+        ProgressBar progressBarForSave = (ProgressBar) itemView.findViewById(R.id.progress_bar_for_save);
+        ImageView saveImageView = (ImageView) itemView.findViewById(R.id.save_image_view);
+
+        saveImageView.setVisibility(View.GONE);
+        progressBarForSave.setVisibility(View.VISIBLE);
+    }
+
+    public void showDeleteButton(View itemView) {
+        ProgressBar progressBarForSave = (ProgressBar) itemView.findViewById(R.id.progress_bar_for_save);
+        ImageView deleteImageView = (ImageView) itemView.findViewById(R.id.delete_image_view);
+
+        progressBarForSave.setVisibility(View.GONE);
+        deleteImageView.setVisibility(View.VISIBLE);
+
+    }
+
+    public void showSaveButton(View itemView) {
+        ImageView saveImageView = (ImageView) itemView.findViewById(R.id.save_image_view);
+        ImageView deleteImageView = (ImageView) itemView.findViewById(R.id.delete_image_view);
+
+        deleteImageView.setVisibility(View.GONE);
+        saveImageView.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public ImageListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -67,7 +100,7 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
     }
 
     @Override
-    public void onBindViewHolder(final ImageListViewHolder holder, final int position) {
+    public void onBindViewHolder(final ImageListViewHolder holder, int position) {
         Glide.with(ctx)
                 .load(new File(items.get(position).getCompletePath()))
                 .crossFade()
@@ -91,21 +124,30 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
             @Override
             public void onClick(View v) {
                 // TODO: 9/3/17 Change position to holder.get...
-                onClickSubject.onNext(position);
+                onClickSubject.onNext(holder.getAdapterPosition());
             }
         });
 
         holder.saveImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSaveClickSubject.onNext(position);
+                onSaveClickSubject.onNext(holder.getAdapterPosition());
+            }
+        });
+
+        holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDeleteClickSubject.onNext(holder.getAdapterPosition());
             }
         });
 
         if (items.get(position).isSavedLocally()) {
             holder.saveImageView.setVisibility(View.GONE);
+            holder.deleteImageView.setVisibility(View.VISIBLE);
         }else{
             holder.saveImageView.setVisibility(View.VISIBLE);
+            holder.deleteImageView.setVisibility(View.GONE);
         }
 
     }
@@ -125,6 +167,11 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
         ProgressBar progressBar;
         @BindView(R.id.save_image_view)
         ImageView saveImageView;
+        @BindView(R.id.delete_image_view)
+        ImageView deleteImageView;
+        @BindView(R.id.progress_bar_for_save)
+        ProgressBar progressBarForSave;
+
 
         public ImageListViewHolder(View itemView) {
             super(itemView);

@@ -3,6 +3,12 @@ package com.shzlabs.statussaver.injection.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.shzlabs.statussaver.data.local.FileHelper;
+
+import java.io.File;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -28,4 +34,11 @@ public class AppModule {
     public Context provideContext() {
         return application;
     }
+
+    @Provides
+    @Singleton
+    public FileHelper provideFileHelper() {
+        return new FileHelper();
+    }
+
 }

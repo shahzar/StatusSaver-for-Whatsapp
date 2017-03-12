@@ -13,7 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by shaz on 5/3/17.
@@ -25,7 +26,8 @@ public class FileHelper {
     private static final String STATUS_SAVER_LOCAL_DIR_URI = "/StatusSaver";
     private static final String WHATSAPP_STATUS_DIR_URI = "/WhatsApp/Media/.Statuses";
 
-    @Inject
+    private PublishSubject<ImageModel> mediaStateChangeSubject = PublishSubject.create();
+
     public FileHelper() {
     }
 
@@ -120,6 +122,10 @@ public class FileHelper {
         return sortMediaByLastCreated(images);
     }
 
+    public Observable<ImageModel> getMediaStateObservable() {
+        return mediaStateChangeSubject.asObservable();
+    }
+
     public boolean saveMediaToLocalDir(ImageModel imageModel) {
 
         if (!setupStatusSaverDirectory()) {
@@ -139,13 +145,18 @@ public class FileHelper {
             e.printStackTrace();
             return false;
         }
+        mediaStateChangeSubject.onNext(imageModel);
         return true;
     }
 
     public boolean deleteImageFromLocalDir(ImageModel imageModel) {
         File file = new File(getStatusSaverDirPath(), imageModel.getFileName());
         if (file.exists()) {
-            return file.delete();
+            boolean status = file.delete();
+            if (status) {
+                mediaStateChangeSubject.onNext(imageModel);
+                return true;
+            }
         }
         return false;
     }

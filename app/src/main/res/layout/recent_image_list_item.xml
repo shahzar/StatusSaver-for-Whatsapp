@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.shzlabs.statussaver.SquareLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent" >
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorPrimary100">
 
 
     <ImageView
@@ -27,6 +28,34 @@
         android:layout_marginBottom="5dp"
         android:tint="#0cac00"
         style="@style/saveImageView" />
+
+    <ImageView
+        android:id="@+id/delete_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete_white_24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:tint="#a60016"
+        style="@style/saveImageView"
+        android:visibility="gone"/>
+
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar_for_save"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_save_white_24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:tint="#0cac00"
+        android:visibility="gone"
+        />
 
 
 </com.shzlabs.statussaver.SquareLayout>

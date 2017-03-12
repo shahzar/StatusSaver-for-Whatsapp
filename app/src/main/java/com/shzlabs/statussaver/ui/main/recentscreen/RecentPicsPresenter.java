@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
+
 /**
  * Created by shaz on 6/3/17.
  */
@@ -43,5 +45,13 @@ public class RecentPicsPresenter extends BasePresenter<RecentPicsView> {
     void loadImageViewer(ImageModel imageModel, int position) {
         getMvpView().displayImage(position, imageModel);
     }
+
+    void deleteLocalImage(ImageModel imageModel) {
+        boolean status = fileHelper.deleteImageFromLocalDir(imageModel);
+        if (status) {
+            getMvpView().displayDeleteSuccessMsg();
+        }
+    }
+
 
 }

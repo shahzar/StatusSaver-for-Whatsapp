@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
+
 /**
  * Created by shaz on 6/3/17.
  */
@@ -33,6 +35,18 @@ public class SavedPicsPresenter extends BasePresenter<SavedPicsView> {
         }else{
             getMvpView().displayNoImagesInfo();
         }
+
+        fileHelper.getMediaStateObservable().subscribe(new Action1<ImageModel>() {
+            @Override
+            public void call(ImageModel imageModel) {
+                List<ImageModel> mediaItems = fileHelper.getSavedImages();
+                if (!mediaItems.isEmpty()) {
+                    getMvpView().displaySavedImages(mediaItems);
+                }else{
+                    getMvpView().displayNoImagesInfo();
+                }
+            }
+        });
     }
 
     void loadImageViewer(ImageModel imageModel, int position) {

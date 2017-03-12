@@ -1,6 +1,8 @@
 package com.shzlabs.statussaver.ui.main.saved;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,6 +37,7 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
     private final PublishSubject<Integer> onClickSubject = PublishSubject.create();
     private final PublishSubject<Integer> onLongClickSubject = PublishSubject.create();
     private final PublishSubject<Boolean> onSelectItemsStatusSubject = PublishSubject.create();
+    private int selectedItemFilterColor;
     // Variables to handle selecting multiple items in recyclerview
     private boolean selectItemsOn = false;
     private List<Integer> selectedItemsList;
@@ -44,6 +47,7 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
         this.ctx = ctx;
         items = new ArrayList<>();
         selectedItemsList = new ArrayList<>();
+        selectedItemFilterColor = ctx.getResources().getColor(R.color.savedSelectedItemColor);
     }
 
     public void setItems(List<ImageModel> items) {
@@ -78,12 +82,14 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
     }
 
     @Override
-    public void onBindViewHolder(final ImageListViewHolder holder, final int position) {
+    public void onBindViewHolder(final ImageListViewHolder holder, int position) {
 
         if (isIndexSelected(position)) {
             holder.itemView.setPadding(8,8,8,8);
+            holder.thumbnailImageView.setColorFilter(selectedItemFilterColor, PorterDuff.Mode.MULTIPLY);
         }else{
             holder.itemView.setPadding(0,0,0,0);
+            holder.thumbnailImageView.setColorFilter(null);
         }
 
         Glide.with(ctx)
@@ -109,14 +115,14 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
             @Override
             public void onClick(View v) {
                 // TODO: 9/3/17 Change position to holder.get...
-                onClickSubject.onNext(position);
+                onClickSubject.onNext(holder.getAdapterPosition());
             }
         });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onLongClickSubject.onNext(position);
+                onLongClickSubject.onNext(holder.getAdapterPosition());
                 return true;
             }
         });
