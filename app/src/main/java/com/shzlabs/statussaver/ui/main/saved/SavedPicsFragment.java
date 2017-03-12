@@ -221,6 +221,10 @@ public class SavedPicsFragment extends BaseFragment implements SavedPicsView {
                 }
                 adapter.setSelectItemsOn(false);
                 presenter.loadSavedImages();
+                break;
+            }
+            case android.R.id.home: {
+                adapter.setSelectItemsOn(false);
             }
         }
         return true;

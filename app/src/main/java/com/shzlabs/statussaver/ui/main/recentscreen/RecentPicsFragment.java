@@ -100,7 +100,7 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
                         presenter.saveMedia(adapter.getItemAtPosition(position));
                         adapter.showDeleteButton(view);
                     }
-                }, 1000);
+                }, 500);
 
             }
         });

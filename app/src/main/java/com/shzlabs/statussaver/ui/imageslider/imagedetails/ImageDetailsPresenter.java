@@ -1,6 +1,7 @@
 package com.shzlabs.statussaver.ui.imageslider.imagedetails;
 
 import com.shzlabs.statussaver.data.local.FileHelper;
+import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.BasePresenter;
 
 import javax.inject.Inject;
@@ -22,4 +23,20 @@ public class ImageDetailsPresenter extends BasePresenter<ImageDetailsView> {
     void setLoadingAnimation(boolean status) {
         getMvpView().displayLoadingAnimation(status);
     }
+
+    void saveMedia(ImageModel imageModel) {
+        boolean status = fileHelper.saveMediaToLocalDir(imageModel);
+        if (status) {
+            getMvpView().displayImageSavedMsg();
+        }
+    }
+
+
+    void deleteLocalImage(ImageModel imageModel) {
+        boolean status = fileHelper.deleteImageFromLocalDir(imageModel);
+        if (status) {
+            getMvpView().displayDeleteSuccessMsg();
+        }
+    }
+
 }

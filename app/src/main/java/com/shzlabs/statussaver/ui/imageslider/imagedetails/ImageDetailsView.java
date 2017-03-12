@@ -9,4 +9,6 @@ import com.shzlabs.statussaver.ui.base.MvpView;
 
 public interface ImageDetailsView extends MvpView {
     void displayLoadingAnimation(boolean status);
+    void displayImageSavedMsg();
+    void displayDeleteSuccessMsg();
 }

@@ -7,9 +7,23 @@
     android:background="@android:color/black"
     tools:context="com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity">
 
+    <!--<android.support.design.widget.AppBarLayout-->
+        <!--android:id="@+id/appBarLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--&gt;-->
+
+    <!--</android.support.design.widget.AppBarLayout>-->
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryTranslucent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
 </RelativeLayout>

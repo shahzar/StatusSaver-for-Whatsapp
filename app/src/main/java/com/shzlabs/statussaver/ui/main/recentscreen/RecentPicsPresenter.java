@@ -35,6 +35,18 @@ public class RecentPicsPresenter extends BasePresenter<RecentPicsView> {
         }else{
             getMvpView().displayNoImagesInfo();
         }
+
+        fileHelper.getMediaStateObservable().subscribe(new Action1<ImageModel>() {
+            @Override
+            public void call(ImageModel imageModel) {
+                List<ImageModel> mediaItems = fileHelper.getRecentImages();
+                if (!mediaItems.isEmpty()) {
+                    getMvpView().displayRecentImages(mediaItems);
+                }else{
+                    getMvpView().displayNoImagesInfo();
+                }
+            }
+        });
     }
 
     void saveMedia(ImageModel imageModel) {

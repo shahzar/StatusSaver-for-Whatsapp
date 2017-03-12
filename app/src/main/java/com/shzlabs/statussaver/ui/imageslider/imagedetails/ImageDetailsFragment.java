@@ -1,12 +1,22 @@
 package com.shzlabs.statussaver.ui.imageslider.imagedetails;
 
+import android.animation.Animator;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +26,7 @@ import com.bumptech.glide.request.target.Target;
 import com.shzlabs.statussaver.R;
 import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.BaseFragment;
+import com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity;
 
 import java.io.File;
 
@@ -24,18 +35,35 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity.IMAGES_TYPE_RECENT;
+import static com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity.IMAGES_TYPE_SAVED;
+
 public class ImageDetailsFragment extends BaseFragment implements ImageDetailsView {
+
+    public static boolean toolbarVisible = true;
 
     @Inject
     ImageDetailsPresenter presenter;
     View rootView;
     @BindView(R.id.image_view)
     ImageView imageView;
+    int imageType = -1;
+    private ImageModel imageModel;
+    private Menu menu;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
 
-    public static ImageDetailsFragment newInstance(ImageModel imageModel) {
+    /**
+     *
+     * @param imageModel
+     * @param imageType Image Type available in ImageSliderActivity.java
+     * @return
+     */
+    public static ImageDetailsFragment newInstance(ImageModel imageModel, int imageType) {
 
         Bundle args = new Bundle();
         args.putParcelable("imageData", imageModel);
+        args.putInt("imageType", imageType);
         ImageDetailsFragment fragment = new ImageDetailsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -57,9 +85,19 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
         getTheApplication().getAppComponent().inject(this);
         ButterKnife.bind(this, rootView);
 
+        setHasOptionsMenu(true);
+
+        actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
+        if (!toolbarVisible) {
+            actionBar.hide();
+        }
+
         presenter.attachView(this);
 
-        ImageModel imageModel = getArguments().getParcelable("imageData");
+        imageModel = getArguments().getParcelable("imageData");
+        imageType = getArguments().getInt("imageType");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(imageModel.getFileName());
@@ -83,6 +121,13 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
                 })
                 .into(imageView);
 
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHideToolbar();
+            }
+        });
+
         return rootView;
     }
 
@@ -92,5 +137,96 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
 
     }
 
+    @Override
+    public void displayImageSavedMsg() {
+        Snackbar.make(rootView, "Image saved", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void displayDeleteSuccessMsg() {
+        Snackbar.make(rootView, "Image removed from saved items", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.image_slider_menu, menu);
+        this.menu = menu;
+
+        MenuItem saveItem = menu.findItem(R.id.item_save_image);
+        MenuItem deleteItem = menu.findItem(R.id.item_delete);
+
+        if (imageType == IMAGES_TYPE_RECENT) {
+            if (imageModel.isSavedLocally()) {
+                deleteItem.setVisible(true);
+            }else{
+                saveItem.setVisible(true);
+            }
+        }else if (imageType == IMAGES_TYPE_SAVED) {
+            deleteItem.setVisible(true);
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        MenuItem saveItem = menu.findItem(R.id.item_save_image);
+        MenuItem deleteItem = menu.findItem(R.id.item_delete);
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.item_save_image: {
+                presenter.saveMedia(imageModel);
+                item.setVisible(false);
+                deleteItem.setVisible(true);
+                break;
+            }
+            case R.id.item_delete: {
+                presenter.deleteLocalImage(imageModel);
+                item.setVisible(false);
+                saveItem.setVisible(true);
+                if (imageType == IMAGES_TYPE_SAVED) {
+                    ((ImageSliderActivity)getActivity()).getImageDeletedSubject().onNext(imageModel);
+                }
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    private void showHideToolbar(){
+
+        if(toolbarVisible){
+            // Hide toolbar
+            toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator())
+                    .start();
+        }else{
+            // Show toolbar
+            toolbar.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+
+        }
+
+        // Animation listener
+        toolbar.animate().setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {}
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if(toolbarVisible){
+                    toolbar.setVisibility(View.GONE);
+                    toolbarVisible = false;
+                }else{
+                    toolbarVisible = true;
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {}
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {}
+        });
+    }
 
 }
