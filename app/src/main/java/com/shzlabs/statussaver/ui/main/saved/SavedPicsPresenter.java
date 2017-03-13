@@ -60,4 +60,7 @@ public class SavedPicsPresenter extends BasePresenter<SavedPicsView> {
         getMvpView().displayDeleteSuccessMsg();
     }
 
+    public void confirmDeleteAction(List<ImageModel> imageModels) {
+        getMvpView().displayDeleteConfirm(imageModels);
+    }
 }

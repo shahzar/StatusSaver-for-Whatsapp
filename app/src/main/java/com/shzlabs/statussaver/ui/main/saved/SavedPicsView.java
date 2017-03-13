@@ -15,4 +15,5 @@ public interface SavedPicsView extends MvpView{
     void displayNoImagesInfo();
     void displayImage(int position, ImageModel imageModel);
     void displayDeleteSuccessMsg();
+    void displayDeleteConfirm(List<ImageModel> imageModels);
 }

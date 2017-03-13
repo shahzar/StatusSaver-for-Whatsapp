@@ -16,4 +16,5 @@ public interface RecentPicsView extends MvpView{
     void displayImageSavedMsg();
     void displayImage(int position, ImageModel imageModel);
     void displayDeleteSuccessMsg();
+    void displayDeleteConfirmPrompt(ImageModel imageModel, int itemPosition);
 }

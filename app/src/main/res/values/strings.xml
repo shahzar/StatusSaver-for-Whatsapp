@@ -7,4 +7,7 @@
     <string name="no_images_recent">No recent status images found</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
+    <string name="dialog_action_cancel">Cancel</string>
+    <string name="msg_alert_delete_item_confirm">Item will be removed from saved list. Are you sure?</string>
+    <string name="title_delete_confirm_dialog">Confirm</string>
 </resources>

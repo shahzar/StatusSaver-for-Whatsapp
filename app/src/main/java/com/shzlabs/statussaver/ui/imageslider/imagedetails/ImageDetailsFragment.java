@@ -1,6 +1,7 @@
 package com.shzlabs.statussaver.ui.imageslider.imagedetails;
 
 import android.animation.Animator;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.shzlabs.statussaver.R;
 import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.BaseFragment;
 import com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity;
+import com.shzlabs.statussaver.util.DialogFactory;
 
 import java.io.File;
 
@@ -168,8 +170,8 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        MenuItem saveItem = menu.findItem(R.id.item_save_image);
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        final MenuItem saveItem = menu.findItem(R.id.item_save_image);
         MenuItem deleteItem = menu.findItem(R.id.item_delete);
         int id = item.getItemId();
         switch (id) {
@@ -180,13 +182,33 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
                 break;
             }
             case R.id.item_delete: {
-                presenter.deleteLocalImage(imageModel);
-                item.setVisible(false);
-                saveItem.setVisible(true);
-                if (imageType == IMAGES_TYPE_SAVED) {
-                    ((ImageSliderActivity)getActivity()).getImageDeletedSubject().onNext(imageModel);
-                }
+
+                String title = getString(R.string.title_delete_confirm_dialog);
+                String msg = getString(R.string.msg_alert_delete_item_confirm);
+
+                DialogFactory.createOKCancelDialog(getActivity(), title, msg, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Ok
+                                presenter.deleteLocalImage(imageModel);
+                                item.setVisible(false);
+                                saveItem.setVisible(true);
+                                if (imageType == IMAGES_TYPE_SAVED) {
+                                    ((ImageSliderActivity)getActivity()).getImageDeletedSubject().onNext(imageModel);
+                                }
+                            }
+                        },
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Cancel
+                                dialog.dismiss();
+                            }
+                        }).show();
                 break;
+            }
+            case android.R.id.home: {
+                getActivity().onBackPressed();
             }
         }
 

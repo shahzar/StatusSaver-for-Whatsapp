@@ -31,7 +31,6 @@ public class ImageDetailsPresenter extends BasePresenter<ImageDetailsView> {
         }
     }
 
-
     void deleteLocalImage(ImageModel imageModel) {
         boolean status = fileHelper.deleteImageFromLocalDir(imageModel);
         if (status) {

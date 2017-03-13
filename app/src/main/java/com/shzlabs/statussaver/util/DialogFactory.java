@@ -23,6 +23,16 @@ public final class DialogFactory {
         return alertDialog.create();
     }
 
+    public static Dialog createOKCancelDialog(Context context, String title, String message,
+                                              DialogInterface.OnClickListener okClickListener, DialogInterface.OnClickListener cancelClickListener) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(R.string.dialog_action_ok, okClickListener)
+                .setNegativeButton(R.string.dialog_action_cancel, cancelClickListener);
+        return alertDialog.create();
+    }
+
     public static Dialog createSimpleOkErrorDialog(Context context,
                                                    @StringRes int titleResource,
                                                    @StringRes int messageResource) {

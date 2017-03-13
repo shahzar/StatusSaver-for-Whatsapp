@@ -1,5 +1,6 @@
 package com.shzlabs.statussaver.ui.main.saved;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +11,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,13 +22,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.dragselectrecyclerview.DragSelectRecyclerView;
-import com.afollestad.dragselectrecyclerview.DragSelectRecyclerViewAdapter;
 import com.shzlabs.statussaver.R;
 import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.BaseFragment;
 import com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity;
-import com.shzlabs.statussaver.ui.main.recentscreen.RecentImageListAdapter;
+import com.shzlabs.statussaver.util.DialogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -199,6 +197,34 @@ public class SavedPicsFragment extends BaseFragment implements SavedPicsView {
     }
 
     @Override
+    public void displayDeleteConfirm(final List<ImageModel> imageModels) {
+
+        String title = getString(R.string.title_delete_confirm_dialog);
+        String msg = "";
+
+        if (imageModels.size() == 1) {
+            msg = getString(R.string.msg_alert_delete_item_confirm);
+        }else{
+            msg = imageModels.size() + " items will be removed. Are you sure?";
+        }
+        DialogFactory.createOKCancelDialog(getActivity(), title, msg, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Ok
+                        presenter.deleteLocalImages(imageModels);
+                    }
+                },
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cancel
+                        dialog.dismiss();
+                    }
+                }).show();
+
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.item_selected_contextual_menu, menu);
     }
@@ -217,7 +243,7 @@ public class SavedPicsFragment extends BaseFragment implements SavedPicsView {
                         imageModels.add(imageModel);
                     }
                     // TODO: 10/3/17 Display dialog
-                    presenter.deleteLocalImages(imageModels);
+                    presenter.confirmDeleteAction(imageModels);
                 }
                 adapter.setSelectItemsOn(false);
                 presenter.loadSavedImages();

@@ -66,4 +66,7 @@ public class RecentPicsPresenter extends BasePresenter<RecentPicsView> {
     }
 
 
+    public void confirmDeleteAction(ImageModel imageModel, int itemPosition) {
+        getMvpView().displayDeleteConfirmPrompt(imageModel, itemPosition);
+    }
 }

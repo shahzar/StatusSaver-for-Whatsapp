@@ -1,6 +1,7 @@
 package com.shzlabs.statussaver.ui.imageslider.imagedetails;
 
 
+import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.MvpView;
 
 /**

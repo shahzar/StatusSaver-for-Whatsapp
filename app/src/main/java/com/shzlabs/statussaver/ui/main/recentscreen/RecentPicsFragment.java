@@ -1,5 +1,6 @@
 package com.shzlabs.statussaver.ui.main.recentscreen;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import com.shzlabs.statussaver.R;
 import com.shzlabs.statussaver.data.model.ImageModel;
 import com.shzlabs.statussaver.ui.base.BaseFragment;
 import com.shzlabs.statussaver.ui.imageslider.ImageSliderActivity;
+import com.shzlabs.statussaver.util.DialogFactory;
 
 import java.util.List;
 
@@ -107,8 +109,7 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
         adapter.getOnDeleteItemClicks().subscribe(new Action1<Integer>() {
             @Override
             public void call(Integer position) {
-                adapter.showSaveButton(layoutManager.findViewByPosition(position));
-                presenter.deleteLocalImage(adapter.getItemAtPosition(position));
+                presenter.confirmDeleteAction(adapter.getItemAtPosition(position), position);
             }
         });
 
@@ -184,5 +185,28 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
     @Override
     public void displayDeleteSuccessMsg() {
         Snackbar.make(rootView, "Image removed from saved items", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void displayDeleteConfirmPrompt(final ImageModel imageModel, final int itemPosition) {
+
+        String title = getString(R.string.title_delete_confirm_dialog);
+        String msg = getString(R.string.msg_alert_delete_item_confirm);
+
+        DialogFactory.createOKCancelDialog(getActivity(), title, msg, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Ok
+                        adapter.showSaveButton(layoutManager.findViewByPosition(itemPosition));
+                        presenter.deleteLocalImage(imageModel);
+                    }
+                },
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cancel
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 }
