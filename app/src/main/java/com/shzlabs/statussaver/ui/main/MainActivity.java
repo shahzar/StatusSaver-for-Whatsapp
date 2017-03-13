@@ -151,4 +151,8 @@ public class MainActivity extends BaseActivity implements MainView{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

@@ -53,7 +53,7 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
     public void setItems(List<ImageModel> items) {
         this.items.clear();
         this.items = items;
-        setSelectItemsOn(false);
+//        setSelectItemsOn(false);
         notifyDataSetChanged();
     }
 

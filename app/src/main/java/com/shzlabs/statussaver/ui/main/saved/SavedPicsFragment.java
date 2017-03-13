@@ -242,7 +242,6 @@ public class SavedPicsFragment extends BaseFragment implements SavedPicsView {
                         ImageModel imageModel = adapter.getItemAtPosition(list.get(i));
                         imageModels.add(imageModel);
                     }
-                    // TODO: 10/3/17 Display dialog
                     presenter.confirmDeleteAction(imageModels);
                 }
                 adapter.setSelectItemsOn(false);

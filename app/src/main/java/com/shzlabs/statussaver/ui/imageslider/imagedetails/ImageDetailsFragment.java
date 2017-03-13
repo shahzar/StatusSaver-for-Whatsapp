@@ -2,6 +2,8 @@ package com.shzlabs.statussaver.ui.imageslider.imagedetails;
 
 import android.animation.Animator;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -205,6 +208,29 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
                                 dialog.dismiss();
                             }
                         }).show();
+                break;
+            }
+            case R.id.item_share: {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("image/jpg");
+                File file = new File(imageModel.getCompletePath());
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                startActivity(Intent.createChooser(shareIntent, "Share image using"));
+                break;
+            }
+            case R.id.item_repost: {
+                Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+                whatsappIntent.setType("image/jpeg");
+                whatsappIntent.setPackage("com.whatsapp");
+                Uri uri = Uri.parse(imageModel.getCompletePath());
+                whatsappIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                whatsappIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                try {
+                    startActivity(whatsappIntent);
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Please install Whatsapp to repost.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
                 break;
             }
             case android.R.id.home: {
