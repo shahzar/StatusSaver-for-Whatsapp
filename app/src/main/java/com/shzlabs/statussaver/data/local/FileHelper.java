@@ -1,5 +1,7 @@
 package com.shzlabs.statussaver.data.local;
 
+import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Log;
 
@@ -25,10 +27,12 @@ public class FileHelper {
     private static final String TAG = FileHelper.class.getSimpleName();
     private static final String STATUS_SAVER_LOCAL_DIR_URI = "/StatusSaver";
     private static final String WHATSAPP_STATUS_DIR_URI = "/WhatsApp/Media/.Statuses";
+    private Context ctx;
 
     private PublishSubject<ImageModel> mediaStateChangeSubject = PublishSubject.create();
 
-    public FileHelper() {
+    public FileHelper(Context context) {
+        this.ctx = context;
     }
 
     private String getStatusSaverDirPath() {
@@ -145,6 +149,16 @@ public class FileHelper {
             e.printStackTrace();
             return false;
         }
+
+        // initiate media scan and put the new things into the path array to
+        // make the scanner aware of the location and the files you want to see
+        try {
+            MediaScannerConnection.scanFile(ctx, new String[] {absolutePath}, null, null);
+        } catch (Exception e) {
+            Log.e(TAG, "saveMediaToLocalDir: Media scanner error for new file");
+            e.printStackTrace();
+        }
+
         mediaStateChangeSubject.onNext(imageModel);
         return true;
     }

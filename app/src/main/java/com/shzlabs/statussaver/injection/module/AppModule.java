@@ -37,8 +37,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public FileHelper provideFileHelper() {
-        return new FileHelper();
+    public FileHelper provideFileHelper(Context context) {
+        return new FileHelper(context);
     }
 
 }

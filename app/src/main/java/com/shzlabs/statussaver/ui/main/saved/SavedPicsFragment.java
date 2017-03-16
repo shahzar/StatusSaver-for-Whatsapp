@@ -159,6 +159,7 @@ public class SavedPicsFragment extends BaseFragment implements SavedPicsView {
 
     @Override
     public void displaySavedImages(List<ImageModel> images) {
+        recyclerView.setVisibility(View.VISIBLE);
         presenter.setLoadingAnimation(false);
         noMediaMsgTextView.setVisibility(View.GONE);
         adapter.setItems(images);
@@ -167,6 +168,7 @@ public class SavedPicsFragment extends BaseFragment implements SavedPicsView {
     @Override
     public void displayNoImagesInfo() {
         presenter.setLoadingAnimation(false);
+        recyclerView.setVisibility(View.GONE);
         noMediaMsgTextView.setVisibility(View.VISIBLE);
     }
 
