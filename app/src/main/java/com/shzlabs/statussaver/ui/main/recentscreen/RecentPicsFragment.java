@@ -144,6 +144,7 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
 
     @Override
     public void displayRecentImages(List<ImageModel> images) {
+        recyclerView.setVisibility(View.VISIBLE);
         presenter.setLoadingAnimation(false);
         noRecentImagesMsgTextView.setVisibility(View.GONE);
         adapter.setItems(images);
@@ -153,6 +154,7 @@ public class RecentPicsFragment extends BaseFragment implements RecentPicsView {
     public void displayNoImagesInfo() {
         presenter.setLoadingAnimation(false);
         noRecentImagesMsgTextView.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
     }
 
     @Override
