@@ -16,7 +16,7 @@
 
     <item android:id="@+id/item_repost"
         android:icon="@drawable/ic_repeat_white_24dp"
-        android:title="@string/share"
+        android:title="@string/repost"
         app:showAsAction="ifRoom" />
 
     <item android:id="@+id/item_share"

@@ -11,4 +11,5 @@
     <string name="msg_alert_delete_item_confirm">Item will be removed from saved list. Are you sure?</string>
     <string name="title_delete_confirm_dialog">Confirm</string>
     <string name="share">Share</string>
+    <string name="repost">Repost</string>
 </resources>
