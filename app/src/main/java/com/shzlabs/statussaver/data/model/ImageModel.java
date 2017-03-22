@@ -13,6 +13,7 @@ public class ImageModel implements Parcelable{
     private String completePath;
     private long lastModified;
     private boolean savedLocally = false;
+    private boolean playableMedia = false;
 
     public ImageModel(String fileName, String completePath, long lastModified) {
         this.fileName = fileName;
@@ -20,11 +21,13 @@ public class ImageModel implements Parcelable{
         this.lastModified = lastModified;
     }
 
-    public ImageModel(String fileName, String completePath, long lastModified, boolean isSavedLocally) {
+    public ImageModel(String fileName, String completePath, long lastModified, boolean isSavedLocally,
+                      boolean isVideoOrGif) {
         this.fileName = fileName;
         this.completePath = completePath;
         this.lastModified = lastModified;
         this.savedLocally = isSavedLocally;
+        this.playableMedia = isVideoOrGif;
     }
 
 
@@ -42,6 +45,10 @@ public class ImageModel implements Parcelable{
 
     public boolean isSavedLocally() {
         return savedLocally;
+    }
+
+    public boolean isPlayableMedia() {
+        return playableMedia;
     }
 
     @Override

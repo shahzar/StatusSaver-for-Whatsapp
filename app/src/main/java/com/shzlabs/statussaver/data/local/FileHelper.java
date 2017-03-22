@@ -92,6 +92,20 @@ public class FileHelper {
         return dir.exists();
     }
 
+    private boolean isFileVideoOrGif(String filename) {
+        String[] splits = filename.split("\\.");
+        String fileExtension = splits[splits.length-1];
+
+        switch (fileExtension) {
+            case "mp4":
+            case "gif":{
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public List<ImageModel> getRecentImages() {
         List<ImageModel> images = new ArrayList<>();
         if (isWhatsappDirAvailable()) {
@@ -102,7 +116,8 @@ public class FileHelper {
                         files[i].getName(),
                         files[i].getAbsolutePath(),
                         files[i].lastModified(),
-                        isFileAlreadySaved(files[i].getName()));
+                        isFileAlreadySaved(files[i].getName()),
+                        isFileVideoOrGif(files[i].getName()));
                 images.add(imageModel);
             }
         }
@@ -119,7 +134,9 @@ public class FileHelper {
                 ImageModel imageModel = new ImageModel(
                         files[i].getName(),
                         files[i].getAbsolutePath(),
-                        files[i].lastModified());
+                        files[i].lastModified(),
+                        false,
+                        isFileVideoOrGif(files[i].getName()));
                 images.add(imageModel);
             }
         }

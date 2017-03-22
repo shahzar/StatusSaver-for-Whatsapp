@@ -112,7 +112,6 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: 9/3/17 Change position to holder.get...
                 onClickSubject.onNext(holder.getAdapterPosition());
             }
         });
@@ -124,6 +123,13 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
                 return true;
             }
         });
+
+        // Display play icon if its a video/gif
+        if (items.get(position).isPlayableMedia()) {
+            holder.playImageView.setVisibility(View.VISIBLE);
+        }else{
+            holder.playImageView.setVisibility(View.GONE);
+        }
 
     }
 
@@ -165,6 +171,8 @@ public class SavedImageListAdapter extends RecyclerView.Adapter<SavedImageListAd
         ImageView thumbnailImageView;
         @BindView(R.id.progress_bar)
         ProgressBar progressBar;
+        @BindView(R.id.play_image_view)
+        ImageView playImageView;
 
         public ImageListViewHolder(View itemView) {
             super(itemView);

@@ -52,6 +52,8 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
     View rootView;
     @BindView(R.id.image_view)
     ImageView imageView;
+    @BindView(R.id.play_image_view)
+    ImageView playImageView;
     int imageType = -1;
     private ImageModel imageModel;
     private Menu menu;
@@ -101,13 +103,16 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
 
         presenter.attachView(this);
 
+        // Get data
         imageModel = getArguments().getParcelable("imageData");
         imageType = getArguments().getInt("imageType");
 
+        // Handle transition animation
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             imageView.setTransitionName(imageModel.getFileName());
         }
 
+        // Load Image
         Glide.with(getActivity())
                 .load(new File(imageModel.getCompletePath()))
                 .listener(new RequestListener<File, GlideDrawable>() {
@@ -126,10 +131,24 @@ public class ImageDetailsFragment extends BaseFragment implements ImageDetailsVi
                 })
                 .into(imageView);
 
+        // Load Play button if required
+        if (imageModel.isPlayableMedia()) {
+            playImageView.setVisibility(View.VISIBLE);
+        }
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showHideToolbar();
+            }
+        });
+
+        playImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse(imageModel.getCompletePath()), "video/mp4");
+                startActivity(intent);
             }
         });
 

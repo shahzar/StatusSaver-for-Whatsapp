@@ -142,12 +142,20 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
             }
         });
 
+        // Display Save/Delete icon
         if (items.get(position).isSavedLocally()) {
             holder.saveImageView.setVisibility(View.GONE);
             holder.deleteImageView.setVisibility(View.VISIBLE);
         }else{
             holder.saveImageView.setVisibility(View.VISIBLE);
             holder.deleteImageView.setVisibility(View.GONE);
+        }
+
+        // Display play icon if its a video/gif
+        if (items.get(position).isPlayableMedia()) {
+            holder.playImageView.setVisibility(View.VISIBLE);
+        }else{
+            holder.playImageView.setVisibility(View.GONE);
         }
 
     }
@@ -171,6 +179,8 @@ public class RecentImageListAdapter extends RecyclerView.Adapter<RecentImageList
         ImageView deleteImageView;
         @BindView(R.id.progress_bar_for_save)
         ProgressBar progressBarForSave;
+        @BindView(R.id.play_image_view)
+        ImageView playImageView;
 
 
         public ImageListViewHolder(View itemView) {
